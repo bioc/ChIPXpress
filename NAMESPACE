@@ -1,0 +1,8 @@
+export(ChIPXpress)
+export(buildDatabase)
+export(cleanDatabase)
+importFrom(bigmemory,attach.big.matrix,as.big.matrix,filebacked.big.matrix)
+importFrom(biganalytics,colsum)
+importFrom(affy,ReadAffy,exprs)
+importFrom(GEOquery,getGEO,Meta,getGEOSuppFiles)
+importFrom(frma,frma)

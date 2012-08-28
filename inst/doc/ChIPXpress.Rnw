@@ -1,0 +1,175 @@
+%\VignetteIndexEntry{ChIPXpress}
+%\VignetteDepends{ChIPXpress}
+%\VignetteKeywords{ChIPXpress}
+%\VignettePackage{ChIPXpress}
+
+\documentclass[a4paper]{article}
+\begin{document}
+
+\title{ChIPXpress: enhanced ChIP-seq and ChIP-chip target gene identification using publicly available gene expression data}
+\author{George Wu, Hongkai Ji}
+\maketitle
+
+\section{Introduction}
+ChIPx (i.e., ChIP-seq and ChIP-chip) is increasingly used to map genome-wide transcription factor (TF) binding sites. 
+A single ChIPx experiment can identify thousands of TF bound genes, but typically only a fraction of these genes are functional targets that respond transcriptionally to perturbations of TF expression. 
+Unfortunately, many ChIPx experiments do not have accompanying gene expression data from TF perturbation experiments, 
+making it challenging to identify promising functional target genes for follow-up studies. 
+ChIPXpress is a new Bioconductor package that addresses this issue by integrating 
+ChIPx data with 20,000+ publicly available human and mouse gene expression samples. 
+This tool can significantly improve TF target gene ranking based only on ChIPx data and increase the chances of finding real functional targets among the top ranked genes.
+
+\section{Overview}
+The purpose of ChIPXpress is to identify functional target genes of a TF-of-interest by ranking TF bound target genes from ChIPx data using publicly available gene epxression data. In order for ChIPXpress to accomplish this task, the user will need to analyze their own ChIPx data apriori to obtain a list of predicted TF bound genes. Then given the list of predicted TF bound genes and a database of gene expression profiles (for the same species), ChIPXpress will output a ranked list of TF target genes, where the order is determined by how likely each gene is to be an actual functional TF target. The primary function in this package that does this is called \textit{ChIPXpress}. 
+
+The ChIPXpress function has three input arguments:
+\\[3ex]
+\noindent
+(1) \texttt{TFID}, Entrez GeneID of the TF-of-interest
+\\[3ex]
+\noindent
+(2) \texttt{ChIP}, Vector of TF bound genes predicted from ChIPx data.
+\begin{small}
+
+The TF bound genes should be inputted as a character vector in Entrez GeneID format. Users will be required to process their own ChIPx data using any 
+software of their preference and only need to report the genes (in any order) predicted to be bound by the TF-of-interest.
+\end{small}
+\\[3ex]
+\noindent
+(3) \texttt{DB}, Database of gene expression profiles. This is a processed and normalized matrix of gene expression values where the rows correspond to unqiue Gene IDs and the columns correspond to samples.
+\begin{small}
+
+There are currently two databases - one for mouse (DB\_GPL1261) and one for human (DB\_GPL570) - already built and ready for input. To use them please download and install the \textit{ChIPXpressData} package. The databases are in big.matrix format, which is a more efficient way of storing and managing large data. Each database contains thousands of 
+gene expression profiles collected from a diverse assortment of diseases, 
+cell types, and conditions, which provides regulatory information that helps to infer whether a TF bound gene is a functional target. Later on, we will show how to load either of the two databases in a example ChIPXpress analysis.
+
+Alternatively, users can build their own gene expression databases from NCBI GEO by using functions \textit{buildDatabase} and \textit{cleanDatabase}. This is for users who wish to analyze a different platform or species besides mouse or human, or if a user simply wants to generate their own database. The details will be explained in a later section.
+\end{small}
+
+\section{ChIPXpress Example}
+Here, we illustrate an example of how to use the ChIPXpress function to produce functional TF target gene rankings. Suppose we are interested in studying Oct4 regulation in mouse embryonic stem cells (ESCs). First, we process the ChIP-seq data using CisGenome (or other method) to obtain a list of predicted Oct4-bound target genes in ESCs. This has already been done previously and is stored as a dataset in the package ready for input into the ChIPXpress function. 
+<<echo=TRUE>>=
+library(ChIPXpress)
+data(Oct4ESC_ChIPgenes)
+head(Oct4ESC_ChIPgenes)
+@
+
+Next, we need to load the pre-built mouse database of gene expression profiles from the GPL1261 platform by loading the \textit{ChIPXpressData} package. Remember, since the database is stored in big.matrix format, we need to use the functions specially designed to work with big.matrixes. This requires installing and loading the \textit{bigmemory} package.
+<<echo=TRUE>>=
+library(ChIPXpressData)
+library(bigmemory)
+path <- system.file("extdata",  package="ChIPXpressData")
+DB_GPL1261 <- attach.big.matrix("DB_GPL1261.bigmemory.desc", path=path)
+@
+
+To be more clear on exactly what we just did, we first located the path in which the DB\_GPL1261 database is stored - which would be in the extdata folder of the installed ChIPXpressData package - and then specified the file name and the path to load the DB\_GPL1261 database. To load the DB\_GPL570 database for human data, we would simply replace DB\_GPL1261 with DB\_GPL570.
+
+We are now ready to run the ChIPXpress function. We specify the Entrez GeneID of the TF-of-interest (18999 is the Entrez GeneID of Oct4), the vector of Oct4 bound genes, and the database:
+<<echo=TRUE>>=
+Output <- ChIPXpress(TFID="18999",ChIP=Oct4ESC_ChIPgenes,DB=DB_GPL1261)
+head(Output[[1]])
+head(Output[[2]])
+@
+
+The output is a list of size two. The first item in the list is the Oct4 target gene rankings, where the names of the vector correspond to the Entrez GeneID of each gene and each individual value is the absolute correlation of the gene and Oct4 in the database. The second item reports the TF bound genes that were not found in the database (i.e. not measured by the microarray platform).
+
+To read about exactly how (and why) ChIPXpress uses the gene expression databases, refer to the ChIPXpress paper (Wu and Ji, 2012).
+
+\section{Building your own database}
+In some cases, the user may not want to use either of the two pre-built databases. This may occur if you would like to make your own database for a different platform, or you would like to obtain ChIPXpress rankings for a different species. 
+
+We will first go over the overall process of how the pre-built DB\_GPL1261 and DB\_GPL570 database are constructed and how to build your own database:\\
+(1) download the samples of interest from NCBI GEO,\\
+(2) process them using frma,\\
+(3) convert array IDs into Entrez GeneIDs,\\
+(4) modify the database such that each EntrezGeneID is in one-to-one correspondence with a row of expression measuremnts,\\
+(5) normalize the database by rows.\\
+
+Downloading and processing all samples files for a given platform will take an extremely long time due to the sheer number of samples available in NCBI GEO. For example, building a database from all the GPL1261 samples currently available in GEO (29000+ samples) would take up to 2 weeks depending on download speed and processing power. Thus, we highly recommend the user to use the pre-built databases UNLESS you absolutely need to build your own database.
+
+Fortunately, we provide functions to do accomplish the above 5 steps in 3 steps:
+\\[3ex]
+(1-2) Run the \emph{buildDatabase} function. \emph{buildDatabase} will download the samples from NCBI GEO using the \textit{GEOquery} package and process them with frma, by using the \textit{frma} and \textit{affy} packages. The output will be a matrix of expression values in big.matrix format where each row corresponds to a probe on the platform and each column corresponds to a sample.
+
+For example, if we want to build a database from all samples files in NCBI GEO for the GPL1261 platform, we would do the following:
+
+<<eval=FALSE,echo=TRUE>>=
+library(bigmemory)
+library(biganalytics)
+library(ChIPXrpess)
+library(GEOquery)
+library(affy)
+library(frma)
+library(mouse4302frmavecs)
+ 
+DB <- buildDatabase(GPL_id='GPL1261',SaveDir=tempdir())
+## Make sure the save directory is already created and empty!
+@
+
+Alternatively, we can specify specific sample files in NCBI GEO using GSM IDs. The GSM files need to all be from the same platform. Only use one of the input methods, if GSMfiles are specified then GPL\_id is not required, and vice versa.
+
+<<eval=FALSE,echo=TRUE>>=
+GSM_ids <- c("GSM24056","GSM24058","GSM24060","GSM24061",
+             "GSM94856","GSM94857","GSM94858","GSM94859")
+DB <- buildDatabase(GSMfiles=GSM_ids,SaveDir=tempdir())
+@
+
+As you can see, this function requires the use of the \textit{GEOquery}, \textit{affy}, and \textit{frma} packages to download and process the data and requires the use of the \textit{bigmemory} and \textit{biganalytics} packages to work with big.matrix format files. We also need to load the \textit{mouse4302frmavecs} package, since it is required by frma to process the GPL1261 raw CEL files. (Note: GPL1261 is the GPL ID for mouse 430 2.0 array files) When you build your own database, you will also need to install and download the appropriate frmavecs package. If a current frmavec package does not exist for your desired platform or species, then please see the \textit{frmaTools} package on how to construct your own frmavecs file required by frma.
+
+(3) Convert the rownames of the matrix, currently as probeIDs specific to the platform, into Entrez GeneIDs. This step must be done by the user themselves! Feel free to use any annotation package or method to convert the probeID into Entrez GeneIDs. Here is example code of how we would do it:
+
+<<eval=FALSE,echo=TRUE>>=
+library(mouse4302.db)
+EntrezID <- mget(as.character(rownames(DB)),mouse4302ENTREZID)
+rownames(DB) <- as.character(EntrezID)
+@
+To be explicit, we first downloaded the \textit{mouse4302.db} package which gives us the annotation information on which probeID corresponds to which Entrez GeneID for the mouse 430 2.0 array (or GPL1261 platform). Then we use mget to obtain the Entrez GeneIDs and replace the existing rownames with the Entrez GeneIDs.
+
+(4-5) Run the \textit{cleanDatabase} function on the annotated database. \textit{cleanDatabase} will search for Entrez GeneIDs that corresponds to multiple rows in the database and retain only the row with the highest variance. This is to ensure a 1-to-1 correspondance between each gene ID and each row of expression measurements. Afterwards, the function will normalize the data by rows.
+
+<<eval=FALSE, echo=TRUE>>=
+cleanDB <- cleanDatabase(DB,SaveFile="newDB_GPL1261.bigmemory",
+                         SavePath=tempdir())
+head(cleanDB)
+### cleanDB contains the finished database ready to be 
+### inputted into ChIPXpress.
+@
+
+The user can then directly proceed to use cleanDB as input into the ChIPXpress function. Be sure your final database includes a lot of samples in order to obtain a reliable estimate of the correlation between the TF and each gene. This is also to ensure that the regulatory information obtained from the database is based on the regulatory behavior of the TF and its target genes across a diverse assortment of cell types.
+<<eval=FALSE, echo=TRUE>>=
+out <- ChIPXpress(TFID="18999",ChIP=Oct4ESC_ChIPgenes,DB=cleanDB)
+head(out[[1]])
+head(out[[2]])
+@
+
+Or for future R sessions, the user can load the newly created database by:
+
+<<eval=FALSE, echo=TRUE>>=
+cleanDB <- attach.big.matrix("newDB_GPL1261.bigmemory.desc",path=tempdir())
+head(cleanDB)
+@
+
+Thus, to load the a big.matrix file, such as the pre-built database or the newly created database in this example, we simply need to specify the directory that contains the .bigmemory and .bigmemory.desc files. The .bigmemory file contains the actual matrix information and the XXX.bigmemory.desc file is the description file for the matrix. When saving new databases, feel free to name the database as you see fit, but remember to add on a XXX.bigmemory to denote that it is a big.matrix file. For more information on the big.matrix format, see the \textit{bigmemory} help files.
+
+One final note, it is possible to convert the probeIDs into an alternative geneID format. To do this, simply annotate the probeIDs into the alternative gene ID format and store as the rownames of the matrix. Then, when running ChIPXpress, just make sure that the inputted TF bound genes from ChIPx data are also in the same geneID format. Then ChIPXpress will output rankings using the alternative geneID format, rather than the default and preferred Entrez GeneID format.
+
+\bibliographystyle{apalike}
+\begin{thebibliography}{99}
+\bibitem{Barrett2007}
+Barrett T., Troup D.B., Whilhite S.E., et al. (2007)
+\newblock NCBI GEO: mining tens of millions of expression profiles -- database
+and tools update.
+\newblock {\em Nucl. Acids Res.}, \textbf{35}, D760--D765.
+
+\bibitem{McCall2010}
+McCall M.N., Bolstad B.M., and Irizarry R.A. (2010) 
+\newblock Frozen robust multiarray analysis (fRMA). 
+\newblock {\em Biostatistics}, \textbf{11}, 242--253.
+
+\bibitem{Wu2012}
+Wu, G. and Ji, H. (2012)
+\newblock ChIPXpress: enhanced ChIP-seq and ChIP-chip target gene identifi-cation using publicly available gene expression data.
+\newblock {\em In preparation.}
+
+\end{thebibliography}
+\end{document}
