@@ -28,11 +28,11 @@ The ChIPXpress function has three input arguments:
 (1) \texttt{TFID}, Entrez GeneID of the TF-of-interest
 \\[3ex]
 \noindent
-(2) \texttt{ChIP}, Vector of TF bound genes predicted from ChIPx data.
+(2) \texttt{ChIP}, Ranked vector of TF bound genes predicted from ChIPx data from the most to least likely to be bound by the TF.
 \begin{small}
 
 The TF bound genes should be inputted as a character vector in Entrez GeneID format. Users will be required to process their own ChIPx data using any 
-software of their preference and only need to report the genes (in any order) predicted to be bound by the TF-of-interest.
+software of their preference to determine the initial TF bound gene rankings. To obtain this initial input ranking from ChIPx data, we suggest using the peak rankings, which are based on the size of the detected peaks, that are typically reported by most ChIPx peak callers. Then by assigning each peak to a gene, and sorted by the highest ranked peak for each gene, one can obtain a ranked list of genes predicted to be bound by the TF.
 \end{small}
 \\[3ex]
 \noindent
