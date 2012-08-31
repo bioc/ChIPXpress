@@ -12,5 +12,5 @@ License: GPL(>=2)
 LazyLoad: yes
 Imports: GEOquery, frma, affy, bigmemory, biganalytics
 Depends: ChIPXpressData
-Suggests: mouse4302frmavecs, mouse4302.db, RUnit, BiocGenerics
+Suggests: mouse4302frmavecs, mouse4302.db, mouse4302cdf, RUnit, BiocGenerics
 biocViews: ChIPchip, ChIPseq, Bioinformatics
