@@ -71,7 +71,7 @@ head(Output[[1]])
 head(Output[[2]])
 @
 
-The output is a list of size two. The first item in the list is the Oct4 target gene rankings, where the names of the vector correspond to the Entrez GeneID of each gene and each individual value is the absolute correlation of the gene and Oct4 in the database. The second item reports the TF bound genes that were not found in the database (i.e. not measured by the microarray platform).
+The output is a list of size two. The first item in the list is the Oct4 target gene rankings, where the names of the vector correspond to the Entrez GeneID of each gene and each individual value is ChIPXpress score for the gene calculating by combining the ChIPx and truncated absolute correlation rankings. The second item reports the TF bound genes that were not found in the database (i.e. not measured by the microarray platform).
 
 To read about exactly how (and why) ChIPXpress uses the gene expression databases, refer to the ChIPXpress paper (Wu and Ji, 2012).
 
