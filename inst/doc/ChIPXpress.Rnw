@@ -47,7 +47,7 @@ Alternatively, users can build their own gene expression databases from NCBI GEO
 \end{small}
 
 \section{ChIPXpress Example}
-Here, we illustrate an example of how to use the ChIPXpress function to produce functional TF target gene rankings. Suppose we are interested in studying Oct4 regulation in mouse embryonic stem cells (ESCs). First, we process the ChIP-seq data using CisGenome (or other method) to obtain a list of predicted Oct4-bound target genes in ESCs. This has already been done previously and is stored as a dataset in the package ready for input into the ChIPXpress function. 
+Here, we illustrate an example of how to use the ChIPXpress function to produce functional TF target gene rankings. Suppose we are interested in studying Oct4 regulation in mouse embryonic stem cells (ESCs). First, we process the ChIP-seq data using CisGenome (or other method) to obtain a list of predicted Oct4-bound target genes in ESCs. This has already been done previously and is stored as a data frame in the package ready for input into the ChIPXpress function. 
 <<echo=TRUE>>=
 library(ChIPXpress)
 data(Oct4ESC_ChIPgenes)
@@ -64,14 +64,22 @@ DB_GPL1261 <- attach.big.matrix("DB_GPL1261.bigmemory.desc", path=path)
 
 To be more clear on exactly what we just did, we first located the path in which the DB\_GPL1261 database is stored - which would be in the extdata folder of the installed ChIPXpressData package - and then specified the file name and the path to load the DB\_GPL1261 database. To load the DB\_GPL570 database for human data, we would simply replace DB\_GPL1261 with DB\_GPL570.
 
-We are now ready to run the ChIPXpress function. We specify the Entrez GeneID of the TF-of-interest (18999 is the Entrez GeneID of Oct4), the vector of Oct4 bound genes, and the database:
+We are now ready to run the ChIPXpress function. We specify the Entrez GeneID of the TF-of-interest (18999 is the Entrez GeneID of Oct4), the vector of EntrezIDs for the predicted Oct4 bound genes, and the database:
 <<echo=TRUE>>=
-Output <- ChIPXpress(TFID="18999",ChIP=Oct4ESC_ChIPgenes,DB=DB_GPL1261)
+Output <- ChIPXpress(TFID="18999",ChIP=Oct4ESC_ChIPgenes$EntrezID,DB=DB_GPL1261)
 head(Output[[1]])
 head(Output[[2]])
 @
 
 The output is a list of size two. The first item in the list is the Oct4 target gene rankings, where the names of the vector correspond to the Entrez GeneID of each gene and each individual value is ChIPXpress score for the gene calculating by combining the ChIPx and truncated absolute correlation rankings. The second item reports the TF bound genes that were not found in the database (i.e. not measured by the microarray platform).
+
+For the final step, you can convert the Output into a clean table with genes names or any other preferred gene identifier by using any of your favorite annotation packages (e.g., biomaRt). Here, we can use the original Oct4ESC\_ChIPgenes dataframe to do so directly.
+<<echo=TRUE>>=
+GeneNames <- Oct4ESC_ChIPgenes$Annotation[match(names(Output[[1]]),Oct4ESC_ChIPgenes$EntrezID)]
+Result <- data.frame(1:length(Output[[1]]),GeneNames,names(Output[[1]]),Output[[1]])
+colnames(Result) <- c("Rank","GeneNames","EntrezID","ChIPXpressScore")
+head(Result)
+@
 
 To read about exactly how (and why) ChIPXpress uses the gene expression databases, refer to the ChIPXpress paper (Wu and Ji, 2012).
 

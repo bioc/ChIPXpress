@@ -53,9 +53,17 @@ DB_GPL1261 <- attach.big.matrix("DB_GPL1261.bigmemory.desc",path=path)
 ## To load the human GPL570 data, replace 'DB_GPL1261' with 'DB_GPL570'.
 
 ## Run ChIPXpress ("18999" is Entrez GeneID of Oct4)
-out <- ChIPXpress(TFID="18999",ChIP=Oct4ESC_ChIPgenes,DB=DB_GPL1261)
-head(out[[1]]) ## GeoChIP Rankings
+out <- ChIPXpress(TFID="18999",ChIP=Oct4ESC_ChIPgenes$EntrezID,DB=DB_GPL1261)
+head(out[[1]]) ## ChIPXpress Rankings
 head(out[[2]]) ## Missing genes not found
 
+## For the final step, you can convert the Output into a 
+## clean table with genes names or any other preferred gene identifier 
+## by using any of your favorite annotation packages (e.g., biomaRt). 
+## Here, we can use the original Oct4ESC_ChIPgenes dataframe to do so directly.
+GeneNames <- Oct4ESC_ChIPgenes$Annotation[match(names(out[[1]]),Oct4ESC_ChIPgenes$EntrezID)]
+Result <- data.frame(1:length(out[[1]]),GeneNames,names(out[[1]]),out[[1]])
+colnames(Result) <- c("Rank","GeneNames","EntrezID","ChIPXpressScore")
+head(Result) ## Clean ChIPXpress rankings
 }
 \keyword{ ChIPXpress }

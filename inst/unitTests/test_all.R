@@ -10,7 +10,7 @@ test_all <- function()
     cleanDB <- cleanDatabase(DB,SaveFile="newDB_GPL1261.bigmemory",
                              SavePath=t)
     data(Oct4ESC_ChIPgenes)
-    out <- ChIPXpress(TFID="18999",ChIP=Oct4ESC_ChIPgenes,DB=cleanDB)
+    out <- ChIPXpress(TFID="18999",ChIP=Oct4ESC_ChIPgenes$EntrezID,DB=cleanDB)
     checkEquals(class(out), "list")
     checkEquals(length(out), 2)
     
