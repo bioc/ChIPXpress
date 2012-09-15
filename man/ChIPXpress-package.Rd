@@ -11,7 +11,7 @@ Takes as input predicted TF bound targets from ChIP-chip or ChIP-seq data and ra
 \tabular{ll}{
 Package: \tab ChIPXpress\cr
 Type: \tab Package\cr
-Version: \tab 0.99.6\cr
+Version: \tab 0.99.7\cr
 Date: \tab 2012-07-31\cr
 License: \tab GPL-2\cr
 }

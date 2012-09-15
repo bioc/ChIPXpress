@@ -3,7 +3,7 @@ Type: Package
 Title: ChIPXpress: enhanced transcription factor target gene
         identification from ChIP-seq and ChIP-chip data using publicly
         available gene expression profiles
-Version: 0.99.6
+Version: 0.99.7
 Date: 2012-07-31
 Author: George Wu
 Maintainer: George Wu <gewu@jhsph.edu>
@@ -11,6 +11,8 @@ Description: ChIPXpress takes as input predicted TF bound genes from ChIPx data 
 License: GPL(>=2)
 LazyLoad: yes
 Imports: Biobase, GEOquery, frma, affy, bigmemory, biganalytics
-Depends: ChIPXpressData
-Suggests: mouse4302frmavecs, mouse4302.db, mouse4302cdf, RUnit, BiocGenerics
+Depends: R (>= 2.10), ChIPXpressData
+Suggests: mouse4302frmavecs, mouse4302.db, mouse4302cdf, RUnit,
+        BiocGenerics
 biocViews: ChIPchip, ChIPseq, Bioinformatics
+Packaged: 2012-09-15 02:12:51 UTC; gewu

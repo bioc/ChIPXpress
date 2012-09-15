@@ -75,7 +75,8 @@ The output is a list of size two. The first item in the list is the Oct4 target 
 
 For the final step, you can convert the Output into a clean table with genes names or any other preferred gene identifier by using any of your favorite annotation packages (e.g., biomaRt). Here, we can use the original Oct4ESC\_ChIPgenes dataframe to do so directly.
 <<echo=TRUE>>=
-GeneNames <- Oct4ESC_ChIPgenes$Annotation[match(names(Output[[1]]),Oct4ESC_ChIPgenes$EntrezID)]
+GeneNames <- Oct4ESC_ChIPgenes$Annotation[match(names(Output[[1]]),
+                                          Oct4ESC_ChIPgenes$EntrezID)]
 Result <- data.frame(1:length(Output[[1]]),GeneNames,names(Output[[1]]),Output[[1]])
 colnames(Result) <- c("Rank","GeneNames","EntrezID","ChIPXpressScore")
 head(Result)
