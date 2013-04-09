@@ -7,7 +7,7 @@ ChIPXpress Ranking
 Ranks list of predicted TF bound genes from ChIPx data using a database of publicly available gene expression profiles.
 }
 \usage{
-ChIPXpress(TFID, ChIP, DB, w=0.1, c=0)
+ChIPXpress(TFID, ChIP, DB, w=0.1, c=0, DBvar=NULL)
 }
 \arguments{
   \item{TFID}{
@@ -25,12 +25,16 @@ ChIPXpress(TFID, ChIP, DB, w=0.1, c=0)
   \item{c}{
     A numeric value specifying the TF expression cutoff. The typical user will not need to modify the default value. The TF expression cutoff, c, is used to remove samples in which the TF expression is below the TF expression cutoff, c, prior to the calculation of the absolute correlation. Testing using real datasets revealed that c=0 is the optimal TF expression cutoff.
 }
+   \item{DBvar}{
+    Variance of each probe in the database prior to standardization. Can be found for the pre-built databases in the ChIPXpressData package.
+}
 }
 \details{
 ChIPXpress works by ranking the TF bound genes predicted from ChIPx data by the absolute correlation between each gene and the TF in the database of gene expression profiles. Genes that are more highly correlated, either positively or negatively, are ranked as the most likely to be an actual TF target gene. Note, the absolute correlation is calculated only using the samples in which the TF expression is above c=0, i.e. the mean TF expression across all samples, in order to improve prediction performance. See reference below for more information on the rationale behind the ranking algorithm of ChIPXpress and the selection of the default values w=0.1 and c=0.
 }
 \value{
     Returns a list with two vectors: the first vector contains the absolute correlations of each predicted TF bound gene with the TF in ranked order, where the names of the vector correspond to the Entrez GeneID of each gene, and the second vector contains the Entrez GeneIDs of the predicted TF bound genes not found in the database.
+    An additional warning will be given if DBvar is specified, which will let the user know if the TF has a low expression variance in the database.
 }
 \references{
 Wu G. and Ji H. (2012) ChIPXpress: enhanced ChIP-seq and ChIP-chip target gene identification using publicly available gene expression data. \emph{In preparation}.

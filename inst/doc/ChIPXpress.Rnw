@@ -84,6 +84,8 @@ head(Result)
 
 To read about exactly how (and why) ChIPXpress uses the gene expression databases, refer to the ChIPXpress paper (Wu and Ji, 2012).
 
+An additional option for the pre-built databases is to specify the variance of the probes prior to standardization, then ChIPXpress wil check to see if the TF has a low variance expression in the database (see the ChIPXpress R help file for more details).
+
 \section{Building your own database}
 In some cases, the user may not want to use either of the two pre-built databases. This may occur if you would like to make your own database for a different platform, or you would like to obtain ChIPXpress rankings for a different species. 
 

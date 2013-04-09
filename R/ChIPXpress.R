@@ -1,8 +1,12 @@
 ChIPXpress <-
-function(TFID,ChIP,DB,w=0.1,c=0){
+function(TFID,ChIP,DB,w=0.1,c=0,DBvar=NULL){
   if(sum(TFID %in% rownames(DB))==0) {
     stop("ERROR: TF EntrezID cannot be found in database")
   } else {
+    if(!is.null(DBvar)) {
+        if(DBvar[as.character(TFID)] < 0.1) 
+            warning("Variance of TF is low (<0.1)")
+    }
     index <- DB[as.character(TFID),] > c
     if(sum(index) < 2) {
         stop("ERROR: Need more samples in compendium! 
