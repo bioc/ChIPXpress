@@ -1,11 +1,13 @@
 ChIPXpress <-
-function(TFID,ChIP,DB,w=0.1,c=0,DBvar=NULL){
+function(TFID,ChIP,DB,w=0.1,c=0,warn=FALSE,DBmu=NULL,DBvar=NULL,mu.co=0.1,var.co=0.1){
   if(sum(TFID %in% rownames(DB))==0) {
     stop("ERROR: TF EntrezID cannot be found in database")
   } else {
-    if(!is.null(DBvar)) {
-        if(DBvar[as.character(TFID)] < 0.1) 
-            warning("Variance of TF is low (<0.1)")
+    if(warn) {
+        if(DBvar[as.character(TFID)] < var.co) 
+            warning("Variance of TF is below low variance cutoff")
+        if(|DBmu[as.character(TFID)]| < mu.co)
+            warning("Mean TF expression is below low expression cutoff")
     }
     index <- DB[as.character(TFID),] > c
     if(sum(index) < 2) {
