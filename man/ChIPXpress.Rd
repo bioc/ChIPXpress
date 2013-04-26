@@ -7,7 +7,7 @@ ChIPXpress Ranking
 Ranks list of predicted TF bound genes from ChIPx data using a database of publicly available gene expression profiles.
 }
 \usage{
-ChIPXpress(TFID, ChIP, DB, w=0.1, c=0, DBvar=NULL)
+ChIPXpress(TFID, ChIP, DB, w=0.1, c=0, warn=FALSE, DBmu=NULL, DBvar=NULL, mu.co=0.1, var.co=0.1)
 }
 \arguments{
   \item{TFID}{
@@ -25,8 +25,20 @@ ChIPXpress(TFID, ChIP, DB, w=0.1, c=0, DBvar=NULL)
   \item{c}{
     A numeric value specifying the TF expression cutoff. The typical user will not need to modify the default value. The TF expression cutoff, c, is used to remove samples in which the TF expression is below the TF expression cutoff, c, prior to the calculation of the absolute correlation. Testing using real datasets revealed that c=0 is the optimal TF expression cutoff.
 }
+   \item{warn}{
+    If set to TRUE, then will report warning if mean or variance of the TF is too low as determined by mu.co and var.co. 
+}
+   \item{DBmu}{
+    Mean of each probe in the database prior to standardization. Can be found for the pre-built databases in the ChIPXpressData package.
+}
    \item{DBvar}{
     Variance of each probe in the database prior to standardization. Can be found for the pre-built databases in the ChIPXpressData package.
+}
+   \item{mu.co}{
+    Low mean cutoff. Default is set to 0.1. Comparision will be performed using the absolute mean expression. 
+}
+   \item{var.co}{
+    Low variance cutoff. Default is set to 0.1.
 }
 }
 \details{
