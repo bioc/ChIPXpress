@@ -1,13 +1,27 @@
 ChIPXpress <-
-function(TFID,ChIP,DB,w=0.1,c=0,warn=FALSE,DBmu=NULL,DBvar=NULL,mu.co=0.1,var.co=0.1){
+function(TFID,ChIP,DB,w=0.1,c=0,warn=FALSE,DBmu=NULL,DBvar=NULL){
   if(sum(TFID %in% rownames(DB))==0) {
     stop("ERROR: TF EntrezID cannot be found in database")
   } else {
     if(warn) {
-        if(DBvar[as.character(TFID)] < var.co) 
-            warning("Variance of TF is below low variance cutoff")
-        if(|DBmu[as.character(TFID)]| < mu.co)
-            warning("Mean TF expression is below low expression cutoff")
+        DBcv <- sqrt(DBvar)/DBmu
+        print(paste("Variance of TF:",round(DBvar[as.character(TFID)],3)))
+        print(paste("Mean of TF:",round(DBmu[as.character(TFID)],3)))
+        print(paste("CV of TF:",round(DBcv[as.character(TFID)],3)))
+
+        if(DBmu[as.character(TFID)] < quantile(DBmu,0.25)) 
+            print("TF mean below 25% quantile.")
+        if(DBvar[as.character(TFID)] < quantile(DBvar,0.25)) 
+            print("TF variance below 25% quantile.")
+        if(DBcv[as.character(TFID)] < quantile(DBcv,0.25)) 
+            print("TF coefficient of variation below 25% quantile.")
+
+        if(DBmu[as.character(TFID)] < quantile(DBmu,0.05)) 
+            print("TF mean below 5% quantile.")
+        if(DBvar[as.character(TFID)] < quantile(DBvar,0.05)) 
+            print("TF variance below 5% quantile.")
+        if(DBcv[as.character(TFID)] < quantile(DBcv,0.05)) 
+            print("TF coefficient of variation below 5% quantile.")
     }
     index <- DB[as.character(TFID),] > c
     if(sum(index) < 2) {
