@@ -42,7 +42,7 @@ buildDatabase <- function(GPL_id,GSMfiles=NULL,SaveDir=NULL,LoadPrevious=FALSE){
                backingfile="tmpmatrixGEO.bigmemory",
                dimnames=list(rownames(object), GSMfilenames),
                backingpath=SaveDir, descriptorfile="tmpmatrixGEO.bigmemory.desc")
-            bigdb[,i] <- object
+            bigdb[,i] <- object[,i]
 
             ## Remove downloaded files
             files <- list.files(SaveDir)

@@ -11,14 +11,14 @@ Takes as input predicted TF bound targets from ChIP-chip or ChIP-seq data and ra
 \tabular{ll}{
 Package: \tab ChIPXpress\cr
 Type: \tab Package\cr
-Version: \tab 0.99.7\cr
-Date: \tab 2012-07-31\cr
+Version: \tab 1.22.0\cr
+Date: \tab 2017-12-09\cr
 License: \tab GPL-2\cr
 }
 }
 \author{
 Author: George Wu
-Maintainer: George Wu <gewu@jhsph.edu>
+Maintainer: George Wu <georgetwu@gmail.com>
 }
 \references{
 Wu G. and Ji H. (2012) ChIPXpress: enhanced ChIP-seq and ChIP-chip target gene identification using publicly available gene expression data. \emph{In preparation}.
