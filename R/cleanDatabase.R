@@ -17,7 +17,7 @@ cleanDatabase <- function(DB,SaveFile="newDB.bigmemory",SavePath="."){
 
     if(multilen > 0){
         index <- rownames(DB) %in% MultiIDs
-        cleanDB[(multilen+1):rowdex] <- DB[!index,]
+        cleanDB[(multilen+1):rowdex,] <- DB[!index,]
         rownames(cleanDB)[(multilen+1):rowdex] <- rownames(DB)[!index]
 
         for(i in 1:length(MultiIDs)){
