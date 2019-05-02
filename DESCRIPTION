@@ -3,7 +3,7 @@ Type: Package
 Title: ChIPXpress: enhanced transcription factor target gene
         identification from ChIP-seq and ChIP-chip data using publicly
         available gene expression profiles
-Version: 1.28.0
+Version: 1.29.0
 Date: 2012-12-09
 Author: George Wu
 Maintainer: George Wu <georgetwu@gmail.com>
