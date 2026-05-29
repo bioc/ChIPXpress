@@ -20,3 +20,4 @@ Suggests: mouse4302frmavecs, mouse4302.db, mouse4302cdf, RUnit,
         BiocGenerics
 Packaged: 2012-09-15 02:12:51 UTC; gewu
 biocViews: ChIPchip, ChIPSeq
+Config/Bioconductor/UnsupportedPlatforms: windows
